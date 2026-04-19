@@ -344,17 +344,19 @@ object? DeserializeContent(string content)
 
             if (_javaScriptWorkspace?.OpenedSourceFileAbsolutePathToInMemoryContentMap.TryGetValue(symbolRequest.@params.textDocument.uri, out var javaScriptDocument) ?? false)
             {
-                if (!javaScriptDocument.HasBeenParsedAtLeastOnce)
-                {
-                    var javascriptParser = new JavaScriptParser();
-                    javaScriptDocument.CompilationUnit = javascriptParser.Parse(javaScriptDocument);
-                }
-                var documentSymbolList = new DocumentSymbol[javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count];
-                File.AppendAllText(myPath, $"\n====documentSymbolList.length:{documentSymbolList.Length}====\n");
+                var javascriptParser = new JavaScriptParser();
+                javaScriptDocument.CompilationUnit = javascriptParser.Parse(javaScriptDocument);
+                //if (!javaScriptDocument.HasBeenParsedAtLeastOnce)
+                //{
+                //    var javascriptParser = new JavaScriptParser();
+                //    javaScriptDocument.CompilationUnit = javascriptParser.Parse(javaScriptDocument);
+                //}
+                var documentSymbolArray = new DocumentSymbol[javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count];
+                File.AppendAllText(myPath, $"\n====documentSymbolList.length:{documentSymbolArray.Length}====\n");
                 for (int i = 0; i < javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count; i++)
                 {
                     Position? functionDefinitionStartPosition = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList[i];
-                    documentSymbolList[i] = new DocumentSymbol
+                    documentSymbolArray[i] = new DocumentSymbol
                     {
                         //name
                         kind = SymbolKind.Function,
@@ -370,7 +372,7 @@ object? DeserializeContent(string content)
                 // then lsp server starts up and confirms that the function invocation exists rather than just being undefined and that's when it gets the color...
                 // *In visual studio an undefined function invocation doesn't get syntax highlighting for a function, it is just plain text
                 // For javascript you might have tree sitter do the syntax highlighting because of how runtime related all the type information is
-                var textDocumentDocumentSymbolResponse = new TextDocumentDocumentSymbolResponse(new TextDocumentDocumentSymbolResponseResult { documentSymbols = documentSymbolList });
+                var textDocumentDocumentSymbolResponse = new TextDocumentDocumentSymbolResponse(new TextDocumentDocumentSymbolResponseResult { documentSymbols = documentSymbolArray });
                 Console.Out.WriteLine(MAIN_encodeMessageObject(textDocumentDocumentSymbolResponse));
             }
 

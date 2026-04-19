@@ -97,6 +97,8 @@ object? MAIN_decodeMessage(string json)
         if (!int.TryParse(contentLengthString, out var contentLengthNumber))
             return null;
 
+        File.AppendAllText(myPath, $"\n====contentLengthNumber:{contentLengthNumber}====\n");
+
         // Parse Content
         var indexOfSearchTerm = json.IndexOf("\r\n\r\n");
         if (indexOfSearchTerm == -1) return null; // TODO: Don't return here, the header/content separating token is likely in the next to come chunk... TODO: look at all the return statements not just this one

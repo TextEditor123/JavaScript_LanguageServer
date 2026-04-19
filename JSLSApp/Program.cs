@@ -242,10 +242,20 @@ object? MAIN_decodeMessage(string json)
 
 object? DeserializeContent(string content)
 {
+    File.AppendAllText(myPath, $"\n====DeserializeContent====\n");
+
     var request = JsonSerializer.Deserialize<Request>(content);
+    if (request is null)
+    {
+        File.AppendAllText(myPath, $"\n====request is null====\n");
+    }
     if (!string.IsNullOrWhiteSpace(request?.Method))
     {
         File.AppendAllText(myPath, $"\n====request?.Method:{request?.Method}====\n");
+    }
+    else
+    {
+        File.AppendAllText(myPath, $"\n====ELSE====\n");
     }
     switch (request?.Method)
     {

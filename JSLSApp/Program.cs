@@ -1,10 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-//Console.WriteLine("Hello, World!");
-
-/*
+﻿/*
  Do not forget to re-publish when applicable
  */
+
+using System.Text;
+
+var stdoutChunkObjects = new List<StdoutChunkObject>();
+var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
+var stdoutChunkFirstEntryMetadataContentLengthNumber = 0;
 
 string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -28,6 +30,172 @@ while (true) // I'm getting the warning: "Do not use 'reader.EndOfStream' in an 
     {
         File.AppendAllText(myPath, line);
         File.AppendAllText(myPath, "\n====\n");
+        MAIN_decodeMessage(line);
         // Process line
     }
+}
+
+/*
+32060
+Content-Length: 163
+====
+
+====
+{"method":"initialize","id":0,"params":{"processId":13544,"clientInfo":{"name":"TextEditor123","version":"0.0.1"},"rootUri":"C:\\Users\\hunte\\Repos\\JavaScript"}}
+====
+
+*/
+
+/**
+ * @param {string} json 
+ * @returns {object | null}
+ * 
+ * // TODO: you probably can reinvoke this method if you have extra unread content beyond the length needed to read the message
+ * //     TODO: You could incrementally approach an optimized and correct answer by having this re-invocation for the time being just be a substring of the remaining text.
+ * // TODO: Preferably neither of these would allocate a "substring" But they both will for the time being because I'm using JSON.parse and at the moment I know not of any other way than providing this a string.
+*/
+object? MAIN_decodeMessage(string json)
+{
+    // I've seen both the header and content in a single 'MAIN_decodeMessage' while debugging.
+    // But just the same I've seen only the header in a 'MAIN_decodeMessage' with a separate invocation for the content.
+    //
+    // So the seemingly non-deterministic nature of this is something to note.
+    //
+    // In both scenarios the total content "seemed" equivalent at a glance but I didn't do thorough checking
+
+    //var json = jsonBytes.ToString(); // TODO: Don't toString() this, work with the bytes directly until the end (does JSON.parse take bytes as input? If so never have to do a toString()?).
+
+    if (stdoutChunkObjects.Count == 0)
+    {
+        // Parse Content-Length
+        var indexOfContentLengthToken = json.IndexOf("Content-Length: ");
+        if (indexOfContentLengthToken == -1) return null;
+        var substringIndexStart = indexOfContentLengthToken + 16; /* 16 === 'Content-Length: '.length */
+        var substringIndexEnd = substringIndexStart;
+        for (; substringIndexEnd < json.Length; substringIndexEnd++)
+        {
+            switch (json[substringIndexEnd])
+            {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    break;
+                default:
+                    goto afterOuterForLoop;
+            }
+        }
+        afterOuterForLoop:
+        if (substringIndexEnd == substringIndexStart) return null;
+        var contentLengthString = json.Substring(substringIndexStart, substringIndexEnd - substringIndexStart);
+        if (!int.TryParse(contentLengthString, out var contentLengthNumber))
+            return null;
+
+        // Parse Content
+        var indexOfSearchTerm = json.IndexOf("\r\n\r\n");
+        if (indexOfSearchTerm == -1) return null; // TODO: Don't return here, the header/content separating token is likely in the next to come chunk... TODO: look at all the return statements not just this one
+        substringIndexStart = indexOfSearchTerm + 4; /* 4 === "\r\n\r\n".length */
+
+        // Payload
+        if (substringIndexStart + contentLengthNumber <= json.Length)
+        {
+            // ... read
+            var content = json.Substring(substringIndexStart, (substringIndexStart + contentLengthNumber) - substringIndexStart);
+            return null;//return JSON.parse(content);
+        }
+        else
+        {
+            // ... continue delaying
+            stdoutChunkObjects.Add(new StdoutChunkObject(json));
+
+            stdoutChunkFirstEntryMetadataSubstringIndexStart = substringIndexStart;
+            stdoutChunkFirstEntryMetadataContentLengthNumber = contentLengthNumber;
+            return null;
+        }
+    }
+    else
+    {
+        // Parse Content
+        // 0th
+        var sumUnreadStdout = stdoutChunkObjects[0].BytesDecoded.Length - stdoutChunkFirstEntryMetadataSubstringIndexStart; // initialize to the remaining length that was in the first message of the batch
+
+        // >first && <last
+        for (var i = 1; i < stdoutChunkObjects.Count; i++)
+        { // TODO: You could determine the necessary length of the NEXT chunk that will cause the necessary length requirement to be met then avoid an 'n complexity' and just have 'constant'.
+          // TODO: Further commenting about determining the necessary length of the NEXT chunk, that is what the original 'if' block is doing on the first message. Perhaps these two conditional branches are equivalent when following a "necessary length" implementation.
+            sumUnreadStdout += stdoutChunkObjects[i].BytesDecoded.Length;
+        }
+
+        // current
+        sumUnreadStdout += json.Length;
+
+        // Payload
+        if (stdoutChunkFirstEntryMetadataContentLengthNumber <= sumUnreadStdout)
+        {
+            // ... read
+            var builder = new StringBuilder();
+
+            // 0th
+            var lenZeroth = stdoutChunkObjects[0].BytesDecoded.Length - stdoutChunkFirstEntryMetadataSubstringIndexStart;
+            if (lenZeroth != 0)
+            {
+                var zerothSubstring = stdoutChunkObjects[0].BytesDecoded.Substring(stdoutChunkFirstEntryMetadataSubstringIndexStart, stdoutChunkObjects[0].BytesDecoded.Length);
+                builder.Append(zerothSubstring); // initialize to the remaining length that was in the first message of the batch
+            }
+
+            // >first && <last
+            for (var i = 1; i < stdoutChunkObjects.Count; i++)
+            { // TODO: You could determine the necessary length of the NEXT chunk that will cause the necessary length requirement to be met then avoid an 'n complexity' and just have 'constant'.
+              // TODO: Further commenting about determining the necessary length of the NEXT chunk, that is what the original 'if' block is doing on the first message. Perhaps these two conditional branches are equivalent when following a "necessary length" implementation.
+                builder.Append(stdoutChunkObjects[i].BytesDecoded);
+            }
+
+            // current
+            builder.Append(json);
+
+            var joinedJson = builder.ToString();
+
+            stdoutChunkObjects.Clear(); // TODO: clear the array entries to permit garbage collection (since stdoutChunkObjects is always in the app's scope any entries would as well never be collected)
+
+            string content;
+
+            if (joinedJson.Length == stdoutChunkFirstEntryMetadataContentLengthNumber)
+            {
+                content = joinedJson;
+            }
+            else
+            {
+                content = joinedJson.Substring(0, stdoutChunkFirstEntryMetadataContentLengthNumber - 0);
+                // I can't decide on what to put here, at the end of the day just make sure this case has something instrusive so its incompleteness isn't swept under the rug
+                // maybe I should throw an error I can't describe how "confused" I am at the moment I am just pushing to make progress with every last bit of energy I have
+                // and all the anxiety and decisions i.e.: you get a message box idk
+                throw new NotImplementedException();
+            }
+
+            return null;//return JSON.parse(content);
+
+        }
+        else
+        {
+            // ... continue delaying
+            stdoutChunkObjects.Add(new StdoutChunkObject(json));
+            return null;
+        }
+    }
+}
+
+class StdoutChunkObject
+{
+    public StdoutChunkObject(string bytesDecoded)
+    {
+        BytesDecoded = bytesDecoded;
+    }
+
+    public string BytesDecoded { get; }
 }

@@ -312,7 +312,7 @@ object? DeserializeContent(string content)
             return didOpenTextDocumentNotification;
         case "textDocument/didClose":
             var didCloseTextDocumentNotification = JsonSerializer.Deserialize<DidCloseTextDocumentNotification>(content);
-            File.AppendAllText(myPath, $"\n====DidCloseTextDocumentNotification====\n");
+            File.AppendAllText(myPath, $"\n====DidCloseTextDocumentNotification {didCloseTextDocumentNotification?.@params?.textDocument?.uri ?? "null"} ====\n");
             return request;
         default:
             return request;

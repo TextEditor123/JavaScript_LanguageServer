@@ -243,8 +243,8 @@ object? MAIN_decodeMessage(string json)
 object? DeserializeContent(string content)
 {
     File.AppendAllText(myPath, $"\n====DeserializeContent====\n");
-
-    var request = JsonSerializer.Deserialize<Request>(content);
+    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    var request = JsonSerializer.Deserialize<Request>(content, options);
     if (request is null)
     {
         File.AppendAllText(myPath, $"\n====request is null====\n");

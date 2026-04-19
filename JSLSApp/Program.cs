@@ -260,7 +260,16 @@ object? DeserializeContent(string content)
     switch (request?.Method)
     {
         case "initialize":
-            return JsonSerializer.Deserialize<InitializeRequest>(content);
+            var initializeRequest = JsonSerializer.Deserialize<InitializeRequest>(content);
+            if (!string.IsNullOrWhiteSpace(initializeRequest?.Params?.RootUri))
+            {
+                File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:{initializeRequest?.Params?.RootUri}====\n");
+            }
+            else
+            {
+                File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:null====\n");
+            }
+            return initializeRequest;
         default:
             return request;
     }
@@ -306,7 +315,7 @@ class InitializeRequest
 {
     public string? Method { get; set; }
     public int Id { get; set; }
-    public int MyProperty { get; set; }
+    public InitializeRequestParams? Params { get; set; }
 }
 
 /// <summary>

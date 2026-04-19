@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-class Position
+public class Position
 {
     /**
 	 * Line position in a document (zero-based).

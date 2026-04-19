@@ -1,8 +1,4 @@
-﻿/*
- Do not forget to re-publish when applicable
- */
-
-class StdoutChunkObject
+﻿class StdoutChunkObject
 {
     public StdoutChunkObject(string bytesDecoded)
     {

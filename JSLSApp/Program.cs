@@ -310,6 +310,10 @@ object? DeserializeContent(string content)
                 }
             }
             return didOpenTextDocumentNotification;
+        case "textDocument/didClose":
+            var didCloseTextDocumentNotification = JsonSerializer.Deserialize<DidCloseTextDocumentNotification>(content);
+            File.AppendAllText(myPath, $"\n====DidCloseTextDocumentNotification====\n");
+            return request;
         default:
             return request;
     }
@@ -411,6 +415,29 @@ class DidOpenTextDocumentParams
 	 * The document that was opened.
 	 */
     public TextDocumentItem? textDocument { get; set; }
+}
+
+class DidCloseTextDocumentNotification
+{
+    public string? method { get; set; }
+    public DidCloseTextDocumentParams? @params { get; set; }
+
+}
+
+class DidCloseTextDocumentParams
+{
+    /**
+	 * The document that was closed.
+	 */
+    public TextDocumentIdentifier textDocument { get; set; }
+}
+
+class TextDocumentIdentifier
+{
+    /**
+	 * The text document's URI.
+	 */
+    public string uri { get; set; }
 }
 
 class TextDocumentItem

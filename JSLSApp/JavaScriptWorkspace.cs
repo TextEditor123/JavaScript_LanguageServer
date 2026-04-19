@@ -24,6 +24,12 @@ public class JavaScriptWorkspace
         File.AppendAllText(myPath, $"\n====DidOpenTextDocumentNotification(string sourceFileAbsolutePath)====\n");
         OpenedSourceFileAbsolutePathToInMemoryContentMap.Add(sourceFileAbsolutePath, text.ToCharArray());
     }
+    
+    public void DidCloseTextDocumentNotification(string myPath, string sourceFileAbsolutePath)
+    {
+        File.AppendAllText(myPath, $"\n====DidCloseTextDocumentNotification(string sourceFileAbsolutePath)====\n");
+        OpenedSourceFileAbsolutePathToInMemoryContentMap.Remove(sourceFileAbsolutePath);
+    }
 
     public void Recursive_FileDiscovery(string targetDir)
     {

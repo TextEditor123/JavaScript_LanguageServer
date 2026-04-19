@@ -3,6 +3,7 @@
  */
 
 using System.Text;
+using System.Text.Json;
 
 var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
@@ -147,7 +148,7 @@ object? MAIN_decodeMessage(string json)
                 // ... read
                 var content = json.Substring(substringIndexStart, (substringIndexStart + contentLengthNumber) - substringIndexStart);
                 File.AppendAllText(myPath, $"\n====single-event-content:{content}====\n");
-                return null;//return JSON.parse(content);
+                return DeserializeContent(content);
             }
             else
             {
@@ -220,7 +221,7 @@ object? MAIN_decodeMessage(string json)
                 }
 
                 File.AppendAllText(myPath, $"\n====multi-event-content:{content}====\n");
-                return null;//return JSON.parse(content);
+                return DeserializeContent(content);
 
             }
             else
@@ -239,6 +240,22 @@ object? MAIN_decodeMessage(string json)
     }
 }
 
+object? DeserializeContent(string content)
+{
+    var request = JsonSerializer.Deserialize<Request>(content);
+    if (!string.IsNullOrWhiteSpace(request?.Method))
+    {
+        File.AppendAllText(myPath, $"\n====request?.Method:{request?.Method}====\n");
+    }
+    switch (request?.Method)
+    {
+        case "initialize":
+            return JsonSerializer.Deserialize<InitializeRequest>(content);
+        default:
+            return request;
+    }
+}
+
 class StdoutChunkObject
 {
     public StdoutChunkObject(string bytesDecoded)
@@ -248,3 +265,61 @@ class StdoutChunkObject
 
     public string BytesDecoded { get; }
 }
+
+/*
+{
+    "method": "initialize",
+    "id": 0,
+    "params": {
+        "processId": 31892,
+        "clientInfo": {
+            "name": "TextEditor123",
+            "version": "0.0.1"
+        },
+        "rootUri": "C:\\Users\\hunte\\Repos\\JavaScript"
+    }
+}
+ */
+
+/// <summary>
+/// TODO: Replicate the typescipt interfaces that the protocol provides.
+/// </summary>
+class Request
+{
+    public string? Method { get; set; }
+}
+
+/// <summary>
+/// TODO: Replicate the typescipt interfaces that the protocol provides.
+/// </summary>
+class InitializeRequest
+{
+    public string? Method { get; set; }
+    public int Id { get; set; }
+    public int MyProperty { get; set; }
+}
+
+/// <summary>
+/// TODO: Replicate the typescipt interfaces that the protocol provides.
+/// </summary>
+class InitializeRequestParams
+{
+    public int ProcessId { get; set; }
+    public InitializeRequestParams_clientInfo? ClientInfo { get; set; }
+    public string? RootUri { get; set; }
+}
+
+/// <summary>
+/// TODO: Replicate the typescipt interfaces that the protocol provides.
+/// </summary>
+class InitializeRequestParams_clientInfo
+{
+    public string? Name { get; set; }
+    public string? Version { get; set; }
+}
+
+
+
+
+
+

@@ -261,6 +261,7 @@ object? DeserializeContent(string content)
     {
         case "initialize":
             var initializeRequest = JsonSerializer.Deserialize<InitializeRequest>(content);
+            File.AppendAllText(myPath, $"\n====Id:{initializeRequest?.Id ?? -123}====\n");
             if (!string.IsNullOrWhiteSpace(initializeRequest?.Params?.RootUri))
             {
                 File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:{initializeRequest?.Params?.RootUri}====\n");

@@ -324,7 +324,9 @@ object? DeserializeContent(string content)
             }
             return request;
         case "textDocument/documentSymbol":
-            File.AppendAllText(myPath, $"\n====RECEIVED DOCUMENT SYMBOL====\n");
+            var symbolRequest = JsonSerializer.Deserialize<TextDocumentDocumentSymbolRequest>(content);
+            File.AppendAllText(myPath, $"\n====RECEIVED DOCUMENT SYMBOL {symbolRequest.@params.textDocument.uri}====\n");
+
             return request;
         default:
             return request;
@@ -607,3 +609,15 @@ class Position
 	 */
     public int character { get; set; }
 }
+
+class TextDocumentDocumentSymbolRequest
+{
+    public string method { get; set; }
+    public TextDocumentDocumentSymbolRequestParams @params { get; set; }
+}
+
+class TextDocumentDocumentSymbolRequestParams
+{
+    public TextDocumentIdentifier textDocument { get; set; }
+}
+

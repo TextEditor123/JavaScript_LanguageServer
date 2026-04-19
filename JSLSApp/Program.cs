@@ -271,6 +271,8 @@ object? DeserializeContent(string content)
             {
                 File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:{initializeRequest?.@params?.rootUri}====\n");
                 _javaScriptWorkspace = new JavaScriptWorkspace(initializeRequest?.@params?.rootUri);
+                File.AppendAllText(myPath, $"\n====_javaScriptWorkspace.SourceFileList.Count:{_javaScriptWorkspace.SourceFileList.Count}====\n");
+                // ====_javaScriptWorkspace.SourceFileList.Count:12====
             }
             else
             {

@@ -262,9 +262,9 @@ object? DeserializeContent(string content)
         case "initialize":
             var initializeRequest = JsonSerializer.Deserialize<InitializeRequest>(content);
             File.AppendAllText(myPath, $"\n====Id:{initializeRequest?.Id ?? -123}====\n");
-            if (!string.IsNullOrWhiteSpace(initializeRequest?.Params?.RootUri))
+            if (!string.IsNullOrWhiteSpace(initializeRequest?.@params?.rootUri))
             {
-                File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:{initializeRequest?.Params?.RootUri}====\n");
+                File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:{initializeRequest?.@params?.rootUri}====\n");
             }
             else
             {
@@ -316,7 +316,7 @@ class InitializeRequest
 {
     public string? Method { get; set; }
     public int Id { get; set; }
-    public InitializeRequestParams? Params { get; set; }
+    public InitializeRequestParams? @params { get; set; }
 }
 
 /// <summary>
@@ -326,7 +326,7 @@ class InitializeRequestParams
 {
     public int ProcessId { get; set; }
     public InitializeRequestParams_clientInfo? ClientInfo { get; set; }
-    public string? RootUri { get; set; }
+    public string? rootUri { get; set; }
 }
 
 /// <summary>

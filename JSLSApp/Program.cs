@@ -368,6 +368,8 @@ object? DeserializeContent(string content)
                 }
                 // tree sitter sees syntax highlight for member access
                 // then lsp server starts up and confirms that the function invocation exists rather than just being undefined and that's when it gets the color...
+                // *In visual studio an undefined function invocation doesn't get syntax highlighting for a function, it is just plain text
+                // For javascript you might have tree sitter do the syntax highlighting because of how runtime related all the type information is
                 var textDocumentDocumentSymbolResponse = new TextDocumentDocumentSymbolResponse(new TextDocumentDocumentSymbolResponseResult { documentSymbols = documentSymbolList });
                 Console.Out.WriteLine(MAIN_encodeMessageObject(textDocumentDocumentSymbolResponse));
             }

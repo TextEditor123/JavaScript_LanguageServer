@@ -10,7 +10,7 @@ var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
 var stdoutChunkFirstEntryMetadataContentLengthNumber = 0;
 
-JavaScriptWorkspace _javaScriptWorkspace;
+JavaScriptWorkspace? _javaScriptWorkspace = null;
 
 // "random note": when lexing, it is 100% better to lex the members than lex the locals; in terms of syntax highlighting, because punctuation is the same color as member identifiers.
 
@@ -294,6 +294,18 @@ object? DeserializeContent(string content)
             var td = didOpenTextDocumentNotification?.@params?.textDocument is null ? "null" : "nn";
             File.AppendAllText(myPath, $"\n====dotdn...textDocument:{td}====\n");
             File.AppendAllText(myPath, $"\n====dotdn...uri:{didOpenTextDocumentNotification?.@params?.textDocument?.uri ?? "null"}====\n");
+            if (didOpenTextDocumentNotification?.@params?.textDocument?.uri is not null)
+            {
+                if (_javaScriptWorkspace is null)
+                {
+                    File.AppendAllText(myPath, $"\n====_javaScriptWorkspace is null====\n");
+                }
+                else
+                {
+                    File.AppendAllText(myPath, $"\n====_javaScriptWorkspace is NOT null====\n");
+                    _javaScriptWorkspace.DidOpenTextDocumentNotification(myPath, didOpenTextDocumentNotification?.@params?.textDocument?.uri);
+                }
+            }
             return didOpenTextDocumentNotification;
         default:
             return request;

@@ -18,6 +18,7 @@ using Range = JSLSApp.LspTypes.Range;
 //";
 //var javaScriptDocument = new JavaScriptDocument(str.ToCharArray());
 //javaScriptDocument.CompilationUnit = javaScriptParser.Parse(javaScriptDocument);
+//var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
 
 
 var stdoutChunkObjects = new List<StdoutChunkObject>();
@@ -365,6 +366,8 @@ object? DeserializeContent(string content)
                         }
                     };
                 }
+                // tree sitter sees syntax highlight for member access
+                // then lsp server starts up and confirms that the function invocation exists rather than just being undefined and that's when it gets the color...
                 var textDocumentDocumentSymbolResponse = new TextDocumentDocumentSymbolResponse(new TextDocumentDocumentSymbolResponseResult { documentSymbols = documentSymbolList });
                 Console.Out.WriteLine(MAIN_encodeMessageObject(textDocumentDocumentSymbolResponse));
             }

@@ -2,7 +2,6 @@
  Do not forget to re-publish when applicable
  */
 
-using System.Reflection.Metadata;
 using System.Text;
 
 var stdoutChunkObjects = new List<StdoutChunkObject>();
@@ -57,6 +56,7 @@ Content-Length: 163
 */
 object? MAIN_decodeMessage(string json)
 {
+    File.AppendAllText(myPath, $"\n====MAIN_decodeMessage====\n");
     try
     {
         // I've seen both the header and content in a single 'MAIN_decodeMessage' while debugging.
@@ -98,12 +98,17 @@ object? MAIN_decodeMessage(string json)
             if (substringIndexEnd == substringIndexStart) return null;
             var contentLengthString = json.Substring(substringIndexStart, substringIndexEnd - substringIndexStart);
             if (!int.TryParse(contentLengthString, out var contentLengthNumber))
+            {
+                File.AppendAllText(myPath, $"\n====if (!int.TryParse(contentLengthString, out var contentLengthNumber))====\n");
                 return null;
+            }
+                
 
             File.AppendAllText(myPath, $"\n====contentLengthNumber:{contentLengthNumber}====\n");
 
             // Parse Content
             var indexOfSearchTerm = json.IndexOf("\r\n\r\n");
+            File.AppendAllText(myPath, $"\n====indexOfSearchTerm:{indexOfSearchTerm}====\n");
             if (indexOfSearchTerm == -1) return null; // TODO: Don't return here, the header/content separating token is likely in the next to come chunk... TODO: look at all the return statements not just this one
             substringIndexStart = indexOfSearchTerm + 4; /* 4 === "\r\n\r\n".length */
 

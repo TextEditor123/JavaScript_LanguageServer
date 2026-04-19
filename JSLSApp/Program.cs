@@ -2,6 +2,7 @@
  Do not forget to re-publish when applicable
  */
 
+using JSLSApp;
 using System.Text;
 using System.Text.Json;
 
@@ -9,6 +10,10 @@ var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
 var stdoutChunkFirstEntryMetadataContentLengthNumber = 0;
 char[] buffer = new char[1024];
+
+JavaScriptWorkspace _javaScriptWorkspace;
+
+// "random note": when lexing, it is 100% better to lex the members than lex the locals; in terms of syntax highlighting, because punctuatyion is scolor same
 
 string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -265,6 +270,7 @@ object? DeserializeContent(string content)
             if (!string.IsNullOrWhiteSpace(initializeRequest?.@params?.rootUri))
             {
                 File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:{initializeRequest?.@params?.rootUri}====\n");
+                _javaScriptWorkspace = new JavaScriptWorkspace(initializeRequest?.@params?.rootUri);
             }
             else
             {

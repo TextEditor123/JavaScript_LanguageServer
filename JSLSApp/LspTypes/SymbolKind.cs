@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-enum SymbolKind
+public enum SymbolKind
 {
     File = 1,
     Module = 2,

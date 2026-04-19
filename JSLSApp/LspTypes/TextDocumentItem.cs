@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-class TextDocumentItem
+public class TextDocumentItem
 {
     /**
 	 * The text document's URI.

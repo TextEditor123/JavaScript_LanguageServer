@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-class DocumentSymbol
+public class DocumentSymbol
 {
     /**
 	 * The name of this symbol. Will be displayed in the user interface and

@@ -6,6 +6,7 @@ using JSLSApp;
 using JSLSApp.LspTypes;
 using System.Text;
 using System.Text.Json;
+using Range = JSLSApp.LspTypes.Range;
 
 var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
@@ -330,20 +331,25 @@ object? DeserializeContent(string content)
 
             if (_javaScriptWorkspace?.OpenedSourceFileAbsolutePathToInMemoryContentMap.TryGetValue(symbolRequest.@params.textDocument.uri, out var javaScriptDocument) ?? false)
             {
-                var documentSymbolList = new List<DocumentSymbol>();
-                foreach (var functionDefinitionStartPosition in javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList)
+                var documentSymbolList = new DocumentSymbol[javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count];
+                File.AppendAllText(myPath, $"\n====documentSymbolList.length:{documentSymbolList.Length}====\n");
+                for (int i = 0; i < javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count; i++)
                 {
-                    /*documentSymbolList.Add(new DocumentSymbol
+                    Position? functionDefinitionStartPosition = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList[i];
+                    documentSymbolList[i] = new DocumentSymbol
                     {
                         //name
                         kind = SymbolKind.Function,
                         name = "unknown",
                         range = new Range
                         {
-                            start = new Position { line }
+                            start = functionDefinitionStartPosition,
+                            end = functionDefinitionStartPosition
                         }
-                    });*/
+                    };
                 }
+                var textDocumentDocumentSymbolResponse = new TextDocumentDocumentSymbolResponse(new TextDocumentDocumentSymbolResponseResult { documentSymbols = documentSymbolList });
+                Console.Out.WriteLine(MAIN_encodeMessageObject(textDocumentDocumentSymbolResponse));
             }
 
             return request;

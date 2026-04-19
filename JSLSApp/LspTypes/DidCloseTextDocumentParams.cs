@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-class DidCloseTextDocumentParams
+public class DidCloseTextDocumentParams
 {
     /**
 	 * The document that was closed.

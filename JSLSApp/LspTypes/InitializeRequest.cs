@@ -3,7 +3,7 @@
 /// <summary>
 /// TODO: Replicate the typescipt interfaces that the protocol provides.
 /// </summary>
-class InitializeRequest
+public class InitializeRequest
 {
     public string? Method { get; set; }
     public int Id { get; set; }

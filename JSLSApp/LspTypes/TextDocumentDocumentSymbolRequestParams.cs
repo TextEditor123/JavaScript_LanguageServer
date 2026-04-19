@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-class TextDocumentDocumentSymbolRequestParams
+public class TextDocumentDocumentSymbolRequestParams
 {
     public TextDocumentIdentifier textDocument { get; set; }
 }

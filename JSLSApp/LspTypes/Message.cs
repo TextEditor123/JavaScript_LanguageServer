@@ -18,7 +18,7 @@
 /// <summary>
 /// TODO: Replicate the typescipt interfaces that the protocol provides.
 /// </summary>
-class Message
+public class Message
 {
     public string? Method { get; set; }
 }

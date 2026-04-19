@@ -5,7 +5,7 @@
  *
  * @since 3.16
  */
-enum SymbolTag
+public enum SymbolTag
 {
     /**
 	 * Render a symbol as obsolete, usually using a strike-out.

@@ -3,7 +3,7 @@
 /// <summary>
 /// TODO: Replicate the typescipt interfaces that the protocol provides.
 /// </summary>
-class InitializeResponse
+public class InitializeResponse
 {
     public InitializeResponse(InitializeResponseResult result)
     {

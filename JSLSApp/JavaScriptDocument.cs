@@ -1,4 +1,6 @@
-﻿namespace JSLSApp;
+﻿using JSLSApp.LspTypes;
+
+namespace JSLSApp;
 
 public class JavaScriptDocument
 {
@@ -9,5 +11,5 @@ public class JavaScriptDocument
 
     public char[] Chars { get; }
     public bool HasBeenParsedAtLeastOnce { get; set; }
-    public JavaScriptCompilationUnit CompilationUnit { get; set; } = new JavaScriptCompilationUnit(new List<int>());
+    public JavaScriptCompilationUnit CompilationUnit { get; set; } = new JavaScriptCompilationUnit(new List<Position>());
 }

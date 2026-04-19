@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-class TextDocumentIdentifier
+public class TextDocumentIdentifier
 {
     /**
 	 * The text document's URI.

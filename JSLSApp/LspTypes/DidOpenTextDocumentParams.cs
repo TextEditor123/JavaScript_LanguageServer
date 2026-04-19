@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-class DidOpenTextDocumentParams
+public class DidOpenTextDocumentParams
 {
     /**
 	 * The document that was opened.

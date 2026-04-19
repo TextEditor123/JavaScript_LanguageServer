@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-class Range
+public class Range
 {
     /**
 	 * The range's start position.

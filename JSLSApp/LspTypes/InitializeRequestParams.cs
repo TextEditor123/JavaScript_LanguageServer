@@ -3,7 +3,7 @@
 /// <summary>
 /// TODO: Replicate the typescipt interfaces that the protocol provides.
 /// </summary>
-class InitializeRequestParams
+public class InitializeRequestParams
 {
     public int ProcessId { get; set; }
     public InitializeRequestParams_clientInfo? ClientInfo { get; set; }

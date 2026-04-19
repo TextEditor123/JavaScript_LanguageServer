@@ -2,6 +2,10 @@
 
 //Console.WriteLine("Hello, World!");
 
+/*
+ Do not forget to re-publish when applicable
+ */
+
 string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
 if (homePath != "C:\\Users\\hunte")
@@ -12,14 +16,18 @@ if (homePath != "C:\\Users\\hunte")
 
 //using StreamWriter writer = new StreamWriter("C:\\Users\\hunte\\Repos\\file.txt");
 var myPath = "C:\\Users\\hunte\\Repos\\file.txt";
-File.WriteAllText(myPath, string.Empty);
+File.WriteAllText(myPath, Environment.ProcessId.ToString() + '\n');
 
 using StreamReader reader = new StreamReader(Console.OpenStandardInput());
 
-while (!reader.EndOfStream) // I'm getting the warning: "Do not use 'reader.EndOfStream' in an async method"
+while (true) // I'm getting the warning: "Do not use 'reader.EndOfStream' in an async method"
 {
-    string line = await reader.ReadLineAsync();
-    File.AppendAllText(myPath, line);
-    File.AppendAllText(myPath, "\n====\n");
-    // Process line
+    string? line = reader.ReadLine();
+    //string? line = await reader.ReadLineAsync();
+    if (line is not null)
+    {
+        File.AppendAllText(myPath, line);
+        File.AppendAllText(myPath, "\n====\n");
+        // Process line
+    }
 }

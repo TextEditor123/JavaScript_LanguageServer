@@ -249,7 +249,7 @@ object? DeserializeContent(string content)
 {
     File.AppendAllText(myPath, $"\n====DeserializeContent====\n");
     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-    var request = JsonSerializer.Deserialize<Request>(content, options);
+    var request = JsonSerializer.Deserialize<Message>(content, options);
     if (request is null)
     {
         File.AppendAllText(myPath, $"\n====request is null====\n");
@@ -278,7 +278,12 @@ object? DeserializeContent(string content)
             {
                 File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:null====\n");
             }
+            Console.Out.WriteLine("Writing via the Out property.");
             return initializeRequest;
+        case "textDocument/didOpen":
+            var didOpenTextDocumentNotification = JsonSerializer.Deserialize<DidOpenTextDocumentNotification>(content);
+            File.AppendAllText(myPath, $"\n====dotdn...uri:{didOpenTextDocumentNotification?.@params?.textDocument?.uri ?? "null"}====\n");
+            return didOpenTextDocumentNotification;
         default:
             return request;
     }
@@ -312,7 +317,7 @@ class StdoutChunkObject
 /// <summary>
 /// TODO: Replicate the typescipt interfaces that the protocol provides.
 /// </summary>
-class Request
+class Message
 {
     public string? Method { get; set; }
 }
@@ -346,8 +351,44 @@ class InitializeRequestParams_clientInfo
     public string? Version { get; set; }
 }
 
+class DidOpenTextDocumentNotification
+{
+    public string? Method { get; set; }
+    public DidOpenTextDocumentParams? @params { get; set; }
 
+}
 
+class DidOpenTextDocumentParams
+{
+    /**
+	 * The document that was opened.
+	 */
+    public TextDocumentItem? textDocument { get; set; }
+}
+
+class TextDocumentItem
+{
+    /**
+	 * The text document's URI.
+	 */
+    public string? uri { get; set; }
+
+    /**
+	 * The text document's language identifier.
+	 */
+    public string? languageId { get; set; }
+
+    /**
+	 * The version number of this document (it will increase after each
+	 * change, including undo/redo).
+	 */
+    public int version { get; set; }
+
+    /**
+	 * The content of the opened text document.
+	 */
+    public string? text { get; set; }
+}
 
 
 

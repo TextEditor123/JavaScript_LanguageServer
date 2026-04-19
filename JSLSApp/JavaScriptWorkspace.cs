@@ -4,7 +4,8 @@ public class JavaScriptWorkspace
 {
     private readonly string _rootAbsolutePath;
 
-    public List<string> SourceFileList { get; } = new();
+    public List<string> SourceFileAbsolutePathList { get; } = new();
+    public Dictionary<string, char[]> OpenedSourceFileAbsolutePathToInMemoryContentMap { get; set; }
 
     public JavaScriptWorkspace(string rootAbsolutePath)
     {
@@ -24,7 +25,7 @@ public class JavaScriptWorkspace
         {
             if (Path.GetExtension(childFile) == ".js" || Path.GetExtension(childFile) == ".cjs")
             {
-                SourceFileList.Add(childFile);
+                SourceFileAbsolutePathList.Add(childFile);
             }
         }
 

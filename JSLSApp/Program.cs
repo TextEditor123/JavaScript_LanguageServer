@@ -3,6 +3,7 @@
  */
 
 using JSLSApp;
+using JSLSApp.LspTypes;
 using System.Text;
 using System.Text.Json;
 
@@ -327,297 +328,29 @@ object? DeserializeContent(string content)
             var symbolRequest = JsonSerializer.Deserialize<TextDocumentDocumentSymbolRequest>(content);
             File.AppendAllText(myPath, $"\n====RECEIVED DOCUMENT SYMBOL {symbolRequest.@params.textDocument.uri}====\n");
 
+            if (_javaScriptWorkspace?.OpenedSourceFileAbsolutePathToInMemoryContentMap.TryGetValue(symbolRequest.@params.textDocument.uri, out var javaScriptDocument) ?? false)
+            {
+                var documentSymbolList = new List<DocumentSymbol>();
+                foreach (var functionDefinitionStartPosition in javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList)
+                {
+                    /*documentSymbolList.Add(new DocumentSymbol
+                    {
+                        //name
+                        kind = SymbolKind.Function,
+                        name = "unknown",
+                        range = new Range
+                        {
+                            start = new Position { line }
+                        }
+                    });*/
+                }
+            }
+
             return request;
         default:
             return request;
     }
 }
 
-class StdoutChunkObject
-{
-    public StdoutChunkObject(string bytesDecoded)
-    {
-        BytesDecoded = bytesDecoded;
-    }
 
-    public string BytesDecoded { get; }
-}
-
-/*
-{
-    "method": "initialize",
-    "id": 0,
-    "params": {
-        "processId": 31892,
-        "clientInfo": {
-            "name": "TextEditor123",
-            "version": "0.0.1"
-        },
-        "rootUri": "C:\\Users\\hunte\\Repos\\JavaScript"
-    }
-}
- */
-
-/// <summary>
-/// TODO: Replicate the typescipt interfaces that the protocol provides.
-/// </summary>
-class Message
-{
-    public string? Method { get; set; }
-}
-
-/// <summary>
-/// TODO: Replicate the typescipt interfaces that the protocol provides.
-/// </summary>
-class InitializeRequest
-{
-    public string? Method { get; set; }
-    public int Id { get; set; }
-    public InitializeRequestParams? @params { get; set; }
-}
-
-/// <summary>
-/// TODO: Replicate the typescipt interfaces that the protocol provides.
-/// </summary>
-class InitializeRequestParams
-{
-    public int ProcessId { get; set; }
-    public InitializeRequestParams_clientInfo? ClientInfo { get; set; }
-    public string? rootUri { get; set; }
-}
-
-/// <summary>
-/// TODO: Replicate the typescipt interfaces that the protocol provides.
-/// </summary>
-class InitializeRequestParams_clientInfo
-{
-    public string? Name { get; set; }
-    public string? Version { get; set; }
-}
-
-/// <summary>
-/// TODO: Replicate the typescipt interfaces that the protocol provides.
-/// </summary>
-class InitializeResponse
-{
-    public InitializeResponse(InitializeResponseResult result)
-    {
-        this.result = result;
-    }
-
-    public InitializeResponseResult result { get; set; }
-}
-
-/// <summary>
-/// TODO: Replicate the typescipt interfaces that the protocol provides.
-/// </summary>
-class InitializeResponseResult
-{
-    public int capabilities { get; set; } = 1;
-}
-
-class DidOpenTextDocumentNotification
-{
-    public string? method { get; set; }
-    public DidOpenTextDocumentParams? @params { get; set; }
-
-}
-
-class DidOpenTextDocumentParams
-{
-    /**
-	 * The document that was opened.
-	 */
-    public TextDocumentItem? textDocument { get; set; }
-}
-
-class DidCloseTextDocumentNotification
-{
-    public string? method { get; set; }
-    public DidCloseTextDocumentParams? @params { get; set; }
-
-}
-
-class DidCloseTextDocumentParams
-{
-    /**
-	 * The document that was closed.
-	 */
-    public TextDocumentIdentifier textDocument { get; set; }
-}
-
-class TextDocumentIdentifier
-{
-    /**
-	 * The text document's URI.
-	 */
-    public string uri { get; set; }
-}
-
-class TextDocumentItem
-{
-    /**
-	 * The text document's URI.
-	 */
-    public string? uri { get; set; }
-
-    /**
-	 * The text document's language identifier.
-	 */
-    public string? languageId { get; set; }
-
-    /**
-	 * The version number of this document (it will increase after each
-	 * change, including undo/redo).
-	 */
-    public int version { get; set; }
-
-    /**
-	 * The content of the opened text document.
-	 */
-    public string? text { get; set; }
-}
-
-class DocumentSymbol
-{
-    /**
-	 * The name of this symbol. Will be displayed in the user interface and
-	 * therefore must not be an empty string or a string only consisting of
-	 * white spaces.
-	 */
-    public string name { get; set; }
-
-    /**
-	 * More detail for this symbol, e.g the signature of a function.
-	 */
-    public string detail { get; set; }
-
-    /**
-	 * The kind of this symbol.
-	 */
-    public SymbolKind kind { get; set; }
-
-    /**
-	 * Tags for this document symbol.
-	 *
-	 * @since 3.16.0
-	 */
-    public SymbolTag[]? tags { get; set; }
-
-    /**
-	 * Indicates if this symbol is deprecated.
-	 *
-	 * @deprecated Use tags instead
-	 */
-    public bool deprecated { get; set; }
-
-    /**
-	 * The range enclosing this symbol not including leading/trailing whitespace
-	 * but everything else like comments. This information is typically used to
-	 * determine if the clients cursor is inside the symbol to reveal it  in the
-	 * UI.
-	 */
-    public Range range { get; set; }
-
-    /**
-	 * The range that should be selected and revealed when this symbol is being
-	 * picked, e.g. the name of a function. Must be contained by the `range`.
-	 */
-    public Range selectionRange { get; set; }
-
-    /**
-	 * Children of this symbol, e.g. properties of a class.
-	 */
-    public DocumentSymbol[] children { get; set; }
-}
-
-enum SymbolKind
-{
-    File = 1,
-    Module = 2,
-    Namespace = 3,
-    Package = 4,
-    Class = 5,
-    Method = 6,
-    Property = 7,
-    Field = 8,
-    Constructor = 9,
-    Enum = 10,
-    Interface = 11,
-    Function = 12,
-    Variable = 13,
-    Constant = 14,
-    String = 15,
-    Number = 16,
-    Boolean = 17,
-    Array = 18,
-    Object = 19,
-    Key = 20,
-    Null = 21,
-    EnumMember = 22,
-    Struct = 23,
-    Event = 24,
-    Operator = 25,
-    TypeParameter = 26,
-}
-
-/**
- * Symbol tags are extra annotations that tweak the rendering of a symbol.
- *
- * @since 3.16
- */
-enum SymbolTag
-{
-    /**
-	 * Render a symbol as obsolete, usually using a strike-out.
-	 */
-    Deprecated = 1,
-}
-
-class Range
-{
-    /**
-	 * The range's start position.
-	 */
-    public Position start { get; set; }
-
-    /**
-	 * The range's end position.
-	 */
-    public Position end { get; set; }
-}
-
-class Position
-{
-    /**
-	 * Line position in a document (zero-based).
-	 * 
-	 * This is a comment from myself not the docs:
-	 *     TODO: consider uint because the docs specifically said 'uinteger'
-	 */
-    public int line { get; set; }
-
-    /**
-	 * Character offset on a line in a document (zero-based). The meaning of this
-	 * offset is determined by the negotiated `PositionEncodingKind`.
-	 *
-	 * If the character value is greater than the line length it defaults back
-	 * to the line length.
-	 * 
-	 * This is a comment from myself not the docs:
-	 *     TODO: consider uint because the docs specifically said 'uinteger'
-	 */
-    public int character { get; set; }
-}
-
-class TextDocumentDocumentSymbolRequest
-{
-    public string method { get; set; }
-    public TextDocumentDocumentSymbolRequestParams @params { get; set; }
-}
-
-class TextDocumentDocumentSymbolRequestParams
-{
-    public TextDocumentIdentifier textDocument { get; set; }
-}
 

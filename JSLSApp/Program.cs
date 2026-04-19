@@ -13,7 +13,7 @@ char[] buffer = new char[1024];
 
 JavaScriptWorkspace _javaScriptWorkspace;
 
-// "random note": when lexing, it is 100% better to lex the members than lex the locals; in terms of syntax highlighting, because punctuatyion is scolor same
+// "random note": when lexing, it is 100% better to lex the members than lex the locals; in terms of syntax highlighting, because punctuation is the same color as member identifiers.
 
 string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 

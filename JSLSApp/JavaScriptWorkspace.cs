@@ -7,6 +7,8 @@ public class JavaScriptWorkspace
     public List<string> SourceFileAbsolutePathList { get; } = new();
     public Dictionary<string, char[]> OpenedSourceFileAbsolutePathToInMemoryContentMap { get; set; }
 
+    // In World of Warcraft the demon hunters say: "I've sacrificed everything, what have you given?"
+
     public JavaScriptWorkspace(string rootAbsolutePath)
     {
         _rootAbsolutePath = rootAbsolutePath;

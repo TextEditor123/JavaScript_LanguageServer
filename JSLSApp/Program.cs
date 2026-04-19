@@ -9,7 +9,6 @@ using System.Text.Json;
 var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
 var stdoutChunkFirstEntryMetadataContentLengthNumber = 0;
-char[] buffer = new char[1024];
 
 JavaScriptWorkspace _javaScriptWorkspace;
 
@@ -245,6 +244,13 @@ object? MAIN_decodeMessage(string json)
     }
 }
 
+string MAIN_encodeMessageObject(object messageObject)
+{
+    var content = JsonSerializer.Serialize(messageObject);
+    var spacing = "\r\n\r\n";
+    return $"Content - Length: {content.Length}{spacing}{content}";
+}
+
 object? DeserializeContent(string content)
 {
     File.AppendAllText(myPath, $"\n====DeserializeContent====\n");
@@ -278,7 +284,8 @@ object? DeserializeContent(string content)
             {
                 File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:null====\n");
             }
-            Console.Out.WriteLine("Writing via the Out property.");
+            var initializeResponse = new InitializeResponse();
+            Console.Out.WriteLine(MAIN_encodeMessageObject(initializeResponse));
             return initializeRequest;
         case "textDocument/didOpen":
             var didOpenTextDocumentNotification = JsonSerializer.Deserialize<DidOpenTextDocumentNotification>(content);
@@ -349,6 +356,11 @@ class InitializeRequestParams_clientInfo
 {
     public string? Name { get; set; }
     public string? Version { get; set; }
+}
+
+class InitializeResponse
+{
+
 }
 
 class DidOpenTextDocumentNotification

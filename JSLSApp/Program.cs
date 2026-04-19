@@ -323,6 +323,9 @@ object? DeserializeContent(string content)
                 _javaScriptWorkspace.DidCloseTextDocumentNotification(myPath, didCloseTextDocumentNotification?.@params?.textDocument?.uri);
             }
             return request;
+        case "textDocument/documentSymbol":
+            File.AppendAllText(myPath, $"\n====RECEIVED DOCUMENT SYMBOL====\n");
+            return request;
         default:
             return request;
     }

@@ -303,7 +303,10 @@ object? DeserializeContent(string content)
                 else
                 {
                     File.AppendAllText(myPath, $"\n====_javaScriptWorkspace is NOT null====\n");
-                    _javaScriptWorkspace.DidOpenTextDocumentNotification(myPath, didOpenTextDocumentNotification?.@params?.textDocument?.uri);
+                    _javaScriptWorkspace.DidOpenTextDocumentNotification(
+                        myPath,
+                        didOpenTextDocumentNotification?.@params?.textDocument?.uri,
+                        didOpenTextDocumentNotification?.@params?.textDocument?.text);
                 }
             }
             return didOpenTextDocumentNotification;

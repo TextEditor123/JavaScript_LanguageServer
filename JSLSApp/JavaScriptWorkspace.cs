@@ -19,9 +19,10 @@ public class JavaScriptWorkspace
         //}
     }
 
-    public void DidOpenTextDocumentNotification(string myPath, string sourceFileAbsolutePath)
+    public void DidOpenTextDocumentNotification(string myPath, string sourceFileAbsolutePath, string text)
     {
         File.AppendAllText(myPath, $"\n====DidOpenTextDocumentNotification(string sourceFileAbsolutePath)====\n");
+        OpenedSourceFileAbsolutePathToInMemoryContentMap.Add(sourceFileAbsolutePath, text.ToCharArray());
     }
 
     public void Recursive_FileDiscovery(string targetDir)

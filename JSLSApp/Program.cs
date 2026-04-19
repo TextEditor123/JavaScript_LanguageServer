@@ -8,6 +8,18 @@ using System.Text;
 using System.Text.Json;
 using Range = JSLSApp.LspTypes.Range;
 
+
+//var javaScriptParser = new JavaScriptParser();
+//var str = @"1Apple Apple2 Apple AppleFruit FruitApple __Apple AppleApple
+//
+//function Aaa() {
+//}
+//
+//";
+//var javaScriptDocument = new JavaScriptDocument(str.ToCharArray());
+//javaScriptDocument.CompilationUnit = javaScriptParser.Parse(javaScriptDocument);
+
+
 var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
 var stdoutChunkFirstEntryMetadataContentLengthNumber = 0;
@@ -331,6 +343,11 @@ object? DeserializeContent(string content)
 
             if (_javaScriptWorkspace?.OpenedSourceFileAbsolutePathToInMemoryContentMap.TryGetValue(symbolRequest.@params.textDocument.uri, out var javaScriptDocument) ?? false)
             {
+                if (!javaScriptDocument.HasBeenParsedAtLeastOnce)
+                {
+                    var javascriptParser = new JavaScriptParser();
+                    javaScriptDocument.CompilationUnit = javascriptParser.Parse(javaScriptDocument);
+                }
                 var documentSymbolList = new DocumentSymbol[javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count];
                 File.AppendAllText(myPath, $"\n====documentSymbolList.length:{documentSymbolList.Length}====\n");
                 for (int i = 0; i < javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count; i++)

@@ -22,8 +22,8 @@ using StreamReader reader = new StreamReader(Console.OpenStandardInput());
 
 while (true) // I'm getting the warning: "Do not use 'reader.EndOfStream' in an async method"
 {
-    string? line = reader.ReadLine();
-    //string? line = await reader.ReadLineAsync();
+    //string? line = reader.ReadLine();
+    string? line = await reader.ReadLineAsync(); // hmm
     if (line is not null)
     {
         File.AppendAllText(myPath, line);

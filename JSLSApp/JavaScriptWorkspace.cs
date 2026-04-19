@@ -5,24 +5,19 @@ public class JavaScriptWorkspace
     private readonly string _rootAbsolutePath;
 
     public List<string> SourceFileAbsolutePathList { get; } = new();
-    public Dictionary<string, char[]> OpenedSourceFileAbsolutePathToInMemoryContentMap { get; set; } = new();
+    public Dictionary<string, JavaScriptDocument> OpenedSourceFileAbsolutePathToInMemoryContentMap { get; set; } = new();
 
     public JavaScriptWorkspace(string rootAbsolutePath)
     {
         _rootAbsolutePath = rootAbsolutePath;
 
-
-        Recursive_FileDiscovery(rootAbsolutePath);
-        //for ()
-        //{
-        //
-        //}
+        Recursive_FileDiscovery(_rootAbsolutePath);
     }
 
     public void DidOpenTextDocumentNotification(string myPath, string sourceFileAbsolutePath, string text)
     {
         File.AppendAllText(myPath, $"\n====DidOpenTextDocumentNotification(string sourceFileAbsolutePath)====\n");
-        OpenedSourceFileAbsolutePathToInMemoryContentMap.Add(sourceFileAbsolutePath, text.ToCharArray());
+        OpenedSourceFileAbsolutePathToInMemoryContentMap.Add(sourceFileAbsolutePath, new JavaScriptDocument(text.ToCharArray()));
     }
     
     public void DidCloseTextDocumentNotification(string myPath, string sourceFileAbsolutePath)

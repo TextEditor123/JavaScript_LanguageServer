@@ -248,7 +248,7 @@ string MAIN_encodeMessageObject(object messageObject)
 {
     var content = JsonSerializer.Serialize(messageObject);
     var spacing = "\r\n\r\n";
-    return $"Content - Length: {content.Length}{spacing}{content}";
+    return $"Content-Length: {content.Length}{spacing}{content}";
 }
 
 object? DeserializeContent(string content)
@@ -284,7 +284,7 @@ object? DeserializeContent(string content)
             {
                 File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:null====\n");
             }
-            var initializeResponse = new InitializeResponse();
+            var initializeResponse = new InitializeResponse(new InitializeResponseResult());
             Console.Out.WriteLine(MAIN_encodeMessageObject(initializeResponse));
             return initializeRequest;
         case "textDocument/didOpen":
@@ -358,9 +358,25 @@ class InitializeRequestParams_clientInfo
     public string? Version { get; set; }
 }
 
+/// <summary>
+/// TODO: Replicate the typescipt interfaces that the protocol provides.
+/// </summary>
 class InitializeResponse
 {
+    public InitializeResponse(InitializeResponseResult result)
+    {
+        this.result = result;
+    }
 
+    public InitializeResponseResult result { get; set; }
+}
+
+/// <summary>
+/// TODO: Replicate the typescipt interfaces that the protocol provides.
+/// </summary>
+class InitializeResponseResult
+{
+    public int capabilities { get; set; } = 1;
 }
 
 class DidOpenTextDocumentNotification

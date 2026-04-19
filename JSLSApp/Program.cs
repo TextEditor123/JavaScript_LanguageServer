@@ -7,6 +7,7 @@ using System.Text;
 var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
 var stdoutChunkFirstEntryMetadataContentLengthNumber = 0;
+char[] buffer = new char[1024];
 
 string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -25,12 +26,32 @@ using StreamReader reader = new StreamReader(Console.OpenStandardInput());
 while (true) // I'm getting the warning: "Do not use 'reader.EndOfStream' in an async method"
 {
     //string? line = reader.ReadLine();
-    string? line = await reader.ReadLineAsync(); // hmm
-    if (line is not null)
+    /*int length = reader.ReadBlock(buffer); // hmm
+    if (length > 0)
     {
-        File.AppendAllText(myPath, line);
+        var str = new string(buffer, 0, length); // TODO: Don't do this work with the buffer directly.
+        File.AppendAllText(myPath, str);
         File.AppendAllText(myPath, "\n====\n");
-        MAIN_decodeMessage(line);
+        MAIN_decodeMessage(str);
+        // Process line
+    }*/
+
+    /*var text = await reader.ReadToEndAsync(); // hmm
+    if (text is not null)
+    {
+        File.AppendAllText(myPath, text);
+        File.AppendAllText(myPath, "\n====\n");
+        MAIN_decodeMessage(text);
+        // Process line
+    }*/
+
+    var text = reader.ReadLine(); // hmm
+    File.AppendAllText(myPath, $"\n====reader.ReadLine()====\n");
+    if (text is not null)
+    {
+        File.AppendAllText(myPath, text);
+        File.AppendAllText(myPath, "\n====\n");
+        MAIN_decodeMessage(text);
         // Process line
     }
 }
@@ -102,14 +123,22 @@ object? MAIN_decodeMessage(string json)
                 File.AppendAllText(myPath, $"\n====if (!int.TryParse(contentLengthString, out var contentLengthNumber))====\n");
                 return null;
             }
-                
 
             File.AppendAllText(myPath, $"\n====contentLengthNumber:{contentLengthNumber}====\n");
 
             // Parse Content
             var indexOfSearchTerm = json.IndexOf("\r\n\r\n");
             File.AppendAllText(myPath, $"\n====indexOfSearchTerm:{indexOfSearchTerm}====\n");
-            if (indexOfSearchTerm == -1) return null; // TODO: Don't return here, the header/content separating token is likely in the next to come chunk... TODO: look at all the return statements not just this one
+            if (indexOfSearchTerm == -1) {
+                // TODO: This is a little scuffed because readline is losing the line endings that delimiter header from content...
+                // ...
+                File.AppendAllText(myPath, $"\n====indexOfSearchTerm == -1-delaying====\n");
+                // ... continue delaying
+                stdoutChunkObjects.Add(new StdoutChunkObject(json));
+                stdoutChunkFirstEntryMetadataSubstringIndexStart = json.Length;
+                stdoutChunkFirstEntryMetadataContentLengthNumber = contentLengthNumber;
+                return null;
+            }
             substringIndexStart = indexOfSearchTerm + 4; /* 4 === "\r\n\r\n".length */
 
             // Payload

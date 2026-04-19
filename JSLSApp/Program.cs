@@ -289,6 +289,10 @@ object? DeserializeContent(string content)
             return initializeRequest;
         case "textDocument/didOpen":
             var didOpenTextDocumentNotification = JsonSerializer.Deserialize<DidOpenTextDocumentNotification>(content);
+            var p = didOpenTextDocumentNotification?.@params is null ? "null" : "nn";
+            File.AppendAllText(myPath, $"\n====dotdn...params:{p}====\n");
+            var td = didOpenTextDocumentNotification?.@params?.textDocument is null ? "null" : "nn";
+            File.AppendAllText(myPath, $"\n====dotdn...textDocument:{td}====\n");
             File.AppendAllText(myPath, $"\n====dotdn...uri:{didOpenTextDocumentNotification?.@params?.textDocument?.uri ?? "null"}====\n");
             return didOpenTextDocumentNotification;
         default:
@@ -381,7 +385,7 @@ class InitializeResponseResult
 
 class DidOpenTextDocumentNotification
 {
-    public string? Method { get; set; }
+    public string? method { get; set; }
     public DidOpenTextDocumentParams? @params { get; set; }
 
 }

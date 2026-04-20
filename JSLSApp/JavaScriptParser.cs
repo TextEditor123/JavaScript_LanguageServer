@@ -144,6 +144,10 @@ public class JavaScriptParser
     /// </summary>
     public SyntaxToken Lex_IdentifierOrKeyword()
     {
+        // 'charIntSum' is a heuristic to detect possible keywords.
+        // This is the only way I've thought to make this work and I'm not overly focused on optimizing this heuristic at the moment so I'm gonna continue using it.
+        // You sum every character in the word, and enter a switch statement to compare that sum against hardcoded sums of every keyword that exists in the language.
+        //
         var charIntSum = (int)_doc.Chars[_pos];
         var startPosition = new Position(_indexLine, _indexChar);
         var length = 1;

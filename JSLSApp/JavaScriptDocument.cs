@@ -11,5 +11,5 @@ public class JavaScriptDocument
 
     public char[] Chars { get; }
     public bool HasBeenParsedAtLeastOnce { get; set; }
-    public JavaScriptCompilationUnit CompilationUnit { get; set; } = new JavaScriptCompilationUnit(new List<Position>());
+    public JavaScriptCompilationUnit CompilationUnit { get; set; } = new JavaScriptCompilationUnit(new List<FunctionDefinitionSyntax>());
 }

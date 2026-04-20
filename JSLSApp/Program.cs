@@ -355,16 +355,16 @@ object? DeserializeContent(string content)
                 File.AppendAllText(myPath, $"\n====documentSymbolList.length:{documentSymbolArray.Length}====\n");
                 for (int i = 0; i < javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count; i++)
                 {
-                    Position functionDefinitionStartPosition = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList[i];
+                    var functionDefinition = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList[i];
                     documentSymbolArray[i] = new DocumentSymbol
                     {
                         //name
                         kind = SymbolKind.Function,
-                        name = "unknown",
+                        name = functionDefinition.Name,
                         range = new Range
                         {
-                            start = functionDefinitionStartPosition,
-                            end = functionDefinitionStartPosition
+                            start = functionDefinition.StartPosition,
+                            end = functionDefinition.StartPosition
                         }
                     };
                 }

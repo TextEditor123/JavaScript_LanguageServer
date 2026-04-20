@@ -17,11 +17,17 @@ public class JavaScriptParser
     private int _indexLine = 0;
     private int _indexChar = 0;
     private bool IsEof => _pos >= _doc.Chars.Length;
-    private List<Position> _functionDefinitionStartPositionList = new List<Position>();
+    private List<FunctionDefinitionSyntax> _functionDefinitionStartPositionList = new List<FunctionDefinitionSyntax>();
 
     public JavaScriptParser(JavaScriptDocument doc)
     {
         _doc = doc;
+    }
+
+    private enum Context
+    {
+        None,
+        ExpectFunctionDefinition,
     }
 
     /// <summary>
@@ -33,6 +39,8 @@ public class JavaScriptParser
     {
         _doc.HasBeenParsedAtLeastOnce = true;
 
+        var context = Context.None;
+
         while (_pos < _doc.Chars.Length)
         {
             var token = Lex();
@@ -41,8 +49,16 @@ public class JavaScriptParser
                 case SyntaxKind.EndOfFileToken:
                     goto exitOuterWhileLoop;
                 case SyntaxKind.FunctionKeywordToken:
+                    context = Context.ExpectFunctionDefinition;
                     break;
                 case SyntaxKind.IdentifierToken:
+                    if (context == Context.ExpectFunctionDefinition)
+                    {
+                        // TODO: Constructing a string here is likely to be extremely GC expensive
+                        // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
+                        _functionDefinitionStartPositionList[^1].Name = new string(_doc.Chars, _pos - token.Length, token.Length);
+                        context = Context.None;
+                    }
                     break;
                 case SyntaxKind.WhitespaceToken:
                     break;
@@ -176,23 +192,28 @@ public class JavaScriptParser
             _pos++;
         }
 
-        if (charIntSum == 870)
+        var syntaxKind = SyntaxKind.IdentifierToken;
+
+        switch (charIntSum)
         {
-            if (length == 8 &&
-                _doc.Chars[_pos - 8] == 102 /* 'f' */ &&
-                _doc.Chars[_pos - 7] == 117 /* 'u' */ &&
-                _doc.Chars[_pos - 6] == 110 /* 'n' */ &&
-                _doc.Chars[_pos - 5] == 99  /* 'c' */ &&
-                _doc.Chars[_pos - 4] == 116 /* 't' */ &&
-                _doc.Chars[_pos - 3] == 105 /* 'i' */ &&
-                _doc.Chars[_pos - 2] == 111 /* 'o' */ &&
-                _doc.Chars[_pos - 1] == 110 /* 'n' */)
-            {
-                _functionDefinitionStartPositionList.Add(startPosition);
-            }
+            case 870:
+                if (length == 8 &&
+                    _doc.Chars[_pos - 8] == 102 /* 'f' */ &&
+                    _doc.Chars[_pos - 7] == 117 /* 'u' */ &&
+                    _doc.Chars[_pos - 6] == 110 /* 'n' */ &&
+                    _doc.Chars[_pos - 5] == 99  /* 'c' */ &&
+                    _doc.Chars[_pos - 4] == 116 /* 't' */ &&
+                    _doc.Chars[_pos - 3] == 105 /* 'i' */ &&
+                    _doc.Chars[_pos - 2] == 111 /* 'o' */ &&
+                    _doc.Chars[_pos - 1] == 110 /* 'n' */)
+                {
+                    _functionDefinitionStartPositionList.Add(new FunctionDefinitionSyntax(startPosition));
+                    syntaxKind = SyntaxKind.FunctionKeywordToken;
+                }
+                break;
         }
 
-        return new SyntaxToken(SyntaxKind.IdentifierToken, startPosition, length);
+        return new SyntaxToken(syntaxKind, startPosition, length);
     }
 
     /// <summary>

@@ -29,7 +29,6 @@ public class JavaScriptParser
     /// i.e.: I think I recall "recursive descent parsing" and such.
     /// what are these things... for now this is gonna be quickly written and only accurate to the degree that I need it to be given the circumstances.
     /// </summary>
-    /// <returns></returns>
     public JavaScriptCompilationUnit Parse()
     {
         _doc.HasBeenParsedAtLeastOnce = true;
@@ -145,6 +144,7 @@ public class JavaScriptParser
     /// </summary>
     public SyntaxToken Lex_IdentifierOrKeyword()
     {
+        var charIntSum = (int)_doc.Chars[_pos];
         var startPosition = new Position(_indexLine, _indexChar);
         var length = 1;
         _pos++;
@@ -154,12 +154,14 @@ public class JavaScriptParser
             if (char.IsLetterOrDigit(_doc.Chars[_pos]))
             {
                 length++;
+                charIntSum += _doc.Chars[_pos];
             }
             else
             {
                 if (_doc.Chars[_pos] == '_')
                 {
                     length++;
+                    charIntSum += _doc.Chars[_pos];
                 }
                 else
                 {
@@ -168,6 +170,22 @@ public class JavaScriptParser
             }
 
             _pos++;
+        }
+
+        if (charIntSum == 870)
+        {
+            if (length == 8 &&
+                _doc.Chars[_pos - 8] == 102 /* 'f' */ &&
+                _doc.Chars[_pos - 7] == 117 /* 'u' */ &&
+                _doc.Chars[_pos - 6] == 110 /* 'n' */ &&
+                _doc.Chars[_pos - 5] == 99  /* 'c' */ &&
+                _doc.Chars[_pos - 4] == 116 /* 't' */ &&
+                _doc.Chars[_pos - 3] == 105 /* 'i' */ &&
+                _doc.Chars[_pos - 2] == 111 /* 'o' */ &&
+                _doc.Chars[_pos - 1] == 110 /* 'n' */)
+            {
+                _functionDefinitionStartPositionList.Add(startPosition);
+            }
         }
 
         return new SyntaxToken(SyntaxKind.IdentifierToken, startPosition, length);

@@ -9,16 +9,16 @@ using System.Text.Json;
 using Range = JSLSApp.LspTypes.Range;
 
 
-//var str = @"1Apple Apple2 Apple AppleFruit FruitApple __Apple AppleApple
-//
-//function Aaa() {
-//}
-//
-//";
-//var javaScriptDocument = new JavaScriptDocument(str.ToCharArray());
-//var javaScriptParser = new JavaScriptParser(javaScriptDocument);
-//javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
-//var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
+var str = @"1Apple Apple2 Apple AppleFruit FruitApple __Apple AppleApple
+
+function Aaa() {
+}
+
+";
+var javaScriptDocument = new JavaScriptDocument(str.ToCharArray());
+var javaScriptParser = new JavaScriptParser(javaScriptDocument);
+javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
+var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
 
 
 var stdoutChunkObjects = new List<StdoutChunkObject>();

@@ -24,12 +24,17 @@ public class JavaScriptParser
         _doc = doc;
     }
 
+    /// <summary>
+    /// TODO: Look up the documented ways to parse something.
+    /// i.e.: I think I recall "recursive descent parsing" and such.
+    /// what are these things... for now this is gonna be quickly written and only accurate to the degree that I need it to be given the circumstances.
+    /// </summary>
+    /// <returns></returns>
     public JavaScriptCompilationUnit Parse()
     {
-        /*doc.HasBeenParsedAtLeastOnce = true;
-        var functionDefinitionStartPositionList = new List<Position>();
+        _doc.HasBeenParsedAtLeastOnce = true;
 
-        while (true)
+        while (_pos < _doc.Chars.Length)
         {
             var token = Lex();
             switch (token.SyntaxKind)
@@ -40,55 +45,187 @@ public class JavaScriptParser
                     break;
                 case SyntaxKind.IdentifierToken:
                     break;
+                case SyntaxKind.WhitespaceToken:
+                    break;
             }
         }
 
-        exitOuterWhileLoop:*/
+        exitOuterWhileLoop:
         return new JavaScriptCompilationUnit(_functionDefinitionStartPositionList);
     }
 
-    /*public SyntaxToken Lex()
+    public SyntaxToken Lex()
     {
         while (_pos < _doc.Chars.Length)
         {
             switch (_doc.Chars[_pos])
             {
-                case '\r':
-                    _indexChar = 0;
-                    _indexLine++;
-                    if (_doc.Chars.Length - _pos >= 2)
-                    {
-                        if (_doc.Chars[_pos + 1] == '\n')
-                            _pos++;
-                    }
-                    break;
-                case '\n':
-                    _indexChar = 0;
-                    _indexLine++;
-                    break;
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
                 case 'f':
-                    // TODO: This isn't optimal (and is incorrect given the lack of contextual information) but I want to get a "proof of concept"...
-                    // ...by getting a list of all the functions and then goto definition-ing one or something like this.
-                    if (_doc.Chars.Length - _pos >= 8) /* 8 is length of "function" keyword *//*
-                    {
-                        if (_doc.Chars[_pos + 1] == 'u' &&
-                            _doc.Chars[_pos + 2] == 'n' &&
-                            _doc.Chars[_pos + 3] == 'c' &&
-                            _doc.Chars[_pos + 4] == 't' &&
-                            _doc.Chars[_pos + 5] == 'i' &&
-                            _doc.Chars[_pos + 6] == 'o' &&
-                            _doc.Chars[_pos + 7] == 'n')
-                        {
-                            _functionDefinitionStartPositionList.Add(new Position { line = _indexLine, character = _indexChar });
-                        }
-                    }
-                    goto default;
-                default:
-                    _indexChar++;
-                    break;
+                case 'g':
+                case 'h':
+                case 'i':
+                case 'j':
+                case 'k':
+                case 'l':
+                case 'm':
+                case 'n':
+                case 'o':
+                case 'p':
+                case 'q':
+                case 'r':
+                case 's':
+                case 't':
+                case 'u':
+                case 'v':
+                case 'w':
+                case 'x':
+                case 'y':
+                case 'z':
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
+                case 'G':
+                case 'H':
+                case 'I':
+                case 'J':
+                case 'K':
+                case 'L':
+                case 'M':
+                case 'N':
+                case 'O':
+                case 'P':
+                case 'Q':
+                case 'R':
+                case 'S':
+                case 'T':
+                case 'U':
+                case 'V':
+                case 'W':
+                case 'X':
+                case 'Y':
+                case 'Z':
+                case '_':
+                    return Lex_IdentifierOrKeyword();
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    return Lex_Number();
+                case ' ':
+                case '\t':
+                case '\r':
+                case '\n':
+                    return Lex_Whitespace();
+                //default:
+                //    return CharacterKind.Punctuation;
             }
 
             _pos++;
         }
-    }*/
+
+        return new SyntaxToken(SyntaxKind.EndOfFileToken, new Position(_indexLine, _indexChar), 0);
+    }
+
+    /// <summary>
+    /// TODO: Usage of reserved words with '@' prefix
+    /// </summary>
+    public SyntaxToken Lex_IdentifierOrKeyword()
+    {
+        var startPosition = new Position(_indexLine, _indexChar);
+        var length = 1;
+        _pos++;
+
+        while (_pos < _doc.Chars.Length)
+        {
+            if (char.IsLetterOrDigit(_doc.Chars[_pos]))
+            {
+                length++;
+            }
+            else
+            {
+                if (_doc.Chars[_pos] == '_')
+                {
+                    length++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            _pos++;
+        }
+
+        return new SyntaxToken(SyntaxKind.IdentifierToken, startPosition, length);
+    }
+
+    /// <summary>
+    /// TODO: alternative syntaxes for typing numbers; supports '123' and '123.456'
+    /// </summary>
+    public SyntaxToken Lex_Number()
+    {
+        var startPosition = new Position(_indexLine, _indexChar);
+        var length = 1;
+        _pos++;
+
+        while (_pos < _doc.Chars.Length)
+        {
+            if (char.IsDigit(_doc.Chars[_pos]))
+            {
+                length++;
+            }
+            else
+            {
+                if (_doc.Chars[_pos] == '.')
+                {
+                    length++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            _pos++;
+        }
+
+        return new SyntaxToken(SyntaxKind.NumberToken, startPosition, length);
+    }
+    
+    public SyntaxToken Lex_Whitespace()
+    {
+        var startPosition = new Position(_indexLine, _indexChar);
+        var length = 1;
+        _pos++;
+
+        while (_pos < _doc.Chars.Length)
+        {
+            if (char.IsWhiteSpace(_doc.Chars[_pos]))
+            {
+                length++;
+            }
+            else
+            {
+                break;
+            }
+
+            _pos++;
+        }
+
+        return new SyntaxToken(SyntaxKind.NumberToken, startPosition, length);
+    }
 }

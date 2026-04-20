@@ -9,7 +9,6 @@ using System.Text.Json;
 using Range = JSLSApp.LspTypes.Range;
 
 
-//var javaScriptParser = new JavaScriptParser();
 //var str = @"1Apple Apple2 Apple AppleFruit FruitApple __Apple AppleApple
 //
 //function Aaa() {
@@ -17,7 +16,8 @@ using Range = JSLSApp.LspTypes.Range;
 //
 //";
 //var javaScriptDocument = new JavaScriptDocument(str.ToCharArray());
-//javaScriptDocument.CompilationUnit = javaScriptParser.Parse(javaScriptDocument);
+//var javaScriptParser = new JavaScriptParser(javaScriptDocument);
+//javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
 //var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
 
 
@@ -355,7 +355,7 @@ object? DeserializeContent(string content)
                 File.AppendAllText(myPath, $"\n====documentSymbolList.length:{documentSymbolArray.Length}====\n");
                 for (int i = 0; i < javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count; i++)
                 {
-                    Position? functionDefinitionStartPosition = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList[i];
+                    Position functionDefinitionStartPosition = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList[i];
                     documentSymbolArray[i] = new DocumentSymbol
                     {
                         //name

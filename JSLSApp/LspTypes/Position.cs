@@ -1,6 +1,6 @@
 ﻿namespace JSLSApp.LspTypes;
 
-public class Position
+public struct Position(int line, int character)
 {
     /**
 	 * Line position in a document (zero-based).
@@ -8,7 +8,7 @@ public class Position
 	 * This is a comment from myself not the docs:
 	 *     TODO: consider uint because the docs specifically said 'uinteger'
 	 */
-    public int line { get; set; }
+    public int line { get; set; } = line;
 
     /**
 	 * Character offset on a line in a document (zero-based). The meaning of this
@@ -20,5 +20,5 @@ public class Position
 	 * This is a comment from myself not the docs:
 	 *     TODO: consider uint because the docs specifically said 'uinteger'
 	 */
-    public int character { get; set; }
+    public int character { get; set; } = character;
 }

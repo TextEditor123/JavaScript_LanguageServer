@@ -344,8 +344,8 @@ object? DeserializeContent(string content)
 
             if (_javaScriptWorkspace?.OpenedSourceFileAbsolutePathToInMemoryContentMap.TryGetValue(symbolRequest.@params.textDocument.uri, out var javaScriptDocument) ?? false)
             {
-                var javascriptParser = new JavaScriptParser();
-                javaScriptDocument.CompilationUnit = javascriptParser.Parse(javaScriptDocument);
+                var javascriptParser = new JavaScriptParser(javaScriptDocument);
+                javaScriptDocument.CompilationUnit = javascriptParser.Parse();
                 //if (!javaScriptDocument.HasBeenParsedAtLeastOnce)
                 //{
                 //    var javascriptParser = new JavaScriptParser();

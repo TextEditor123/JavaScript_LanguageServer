@@ -168,6 +168,7 @@ public class JavaScriptParser
         var startPosition = new Position(_indexLine, _indexChar);
         var length = 1;
         _pos++;
+        _indexChar++;
 
         while (_pos < _doc.Chars.Length)
         {
@@ -190,6 +191,7 @@ public class JavaScriptParser
             }
 
             _pos++;
+            _indexChar++;
         }
 
         var syntaxKind = SyntaxKind.IdentifierToken;
@@ -224,6 +226,7 @@ public class JavaScriptParser
         var startPosition = new Position(_indexLine, _indexChar);
         var length = 1;
         _pos++;
+        _indexChar++;
 
         while (_pos < _doc.Chars.Length)
         {
@@ -244,6 +247,7 @@ public class JavaScriptParser
             }
 
             _pos++;
+            _indexChar++;
         }
 
         return new SyntaxToken(SyntaxKind.NumberToken, startPosition, length);
@@ -253,7 +257,29 @@ public class JavaScriptParser
     {
         var startPosition = new Position(_indexLine, _indexChar);
         var length = 1;
+        switch (_doc.Chars[_pos])
+        {
+            case '\r':
+                _indexLine++;
+                _indexChar = 0;
+                if (_pos <= _doc.Chars.Length - 2)
+                {
+                    if (_doc.Chars[_pos + 1] == '\n')
+                    {
+                        _pos++;
+                    }
+                }
+                break;
+            case '\n':
+                _indexLine++;
+                _indexChar = 0;
+                break;
+            default:
+                _indexChar++;
+                break;
+        }
         _pos++;
+        
 
         while (_pos < _doc.Chars.Length)
         {
@@ -266,6 +292,27 @@ public class JavaScriptParser
                 break;
             }
 
+            switch (_doc.Chars[_pos])
+            {
+                case '\r':
+                    _indexLine++;
+                    _indexChar = 0;
+                    if (_pos <= _doc.Chars.Length - 2)
+                    {
+                        if (_doc.Chars[_pos + 1] == '\n')
+                        {
+                            _pos++;
+                        }
+                    }
+                    break;
+                case '\n':
+                    _indexLine++;
+                    _indexChar = 0;
+                    break;
+                default:
+                    _indexChar++;
+                    break;
+            }
             _pos++;
         }
 

@@ -1,8 +1,17 @@
-﻿namespace JSLSApp;
+﻿using JSLSApp.LspTypes;
+
+namespace JSLSApp;
 
 public class JavaScriptWorkspace
 {
-    private readonly string _rootAbsolutePath;
+    /// <summary>
+    /// CAREFUL: EITHER THIS OR _workspaceFolders
+    /// </summary>
+    private readonly string? _rootAbsolutePath;
+    /// <summary>
+    /// CAREFUL: EITHER THIS OR _rootAbsolutePath
+    /// </summary>
+    private readonly List<WorkspaceFolder>? _workspaceFolders;
 
     public List<string> SourceFileAbsolutePathList { get; } = new();
     public Dictionary<string, JavaScriptDocument> OpenedSourceFileAbsolutePathToInMemoryContentMap { get; set; } = new();
@@ -10,8 +19,16 @@ public class JavaScriptWorkspace
     public JavaScriptWorkspace(string rootAbsolutePath)
     {
         _rootAbsolutePath = rootAbsolutePath;
-
         Recursive_FileDiscovery(_rootAbsolutePath);
+    }
+
+    public JavaScriptWorkspace(List<WorkspaceFolder>? workspaceFolders)
+    {
+        _workspaceFolders = workspaceFolders;
+        foreach (var workspaceFolder in _workspaceFolders)
+        {
+            Recursive_FileDiscovery(workspaceFolder.uri);
+        }
     }
 
     public void DidOpenTextDocumentNotification(string myPath, string sourceFileAbsolutePath, string text)

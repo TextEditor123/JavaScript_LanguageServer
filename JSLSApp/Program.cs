@@ -316,7 +316,8 @@ object? DeserializeContent(string content)
                 }
                 else
                 {
-                    File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.workspaceFolders:null====\n");
+                    _javaScriptWorkspace = new JavaScriptWorkspace(initializeRequest?.@params?.workspaceFolders);
+                    File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.workspaceFolders...====\n");
                     foreach (var workspaceFolder in initializeRequest?.@params?.workspaceFolders)
                     {
                         File.AppendAllText(myPath, $"\n====workspaceFolder: name->{workspaceFolder.name} | uri->{workspaceFolder.uri}====\n");

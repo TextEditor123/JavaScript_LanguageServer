@@ -9,16 +9,16 @@ using System.Text.Json;
 using Range = JSLSApp.LspTypes.Range;
 
 
-var str = @"1Apple Apple2 Apple AppleFruit FruitApple __Apple AppleApple
-
-function Aaa() {
-}
-
-";
-var javaScriptDocument = new JavaScriptDocument(str.ToCharArray());
-var javaScriptParser = new JavaScriptParser(javaScriptDocument);
-javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
-var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
+//var str = @"1Apple Apple2 Apple AppleFruit FruitApple __Apple AppleApple
+//
+//function Aaa() {
+//}
+//
+//";
+//var javaScriptDocument = new JavaScriptDocument(str.ToCharArray());
+//var javaScriptParser = new JavaScriptParser(javaScriptDocument);
+//javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
+//var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
 
 
 var stdoutChunkObjects = new List<StdoutChunkObject>();
@@ -286,7 +286,19 @@ object? DeserializeContent(string content)
     switch (request?.Method)
     {
         case "initialize":
+            //File.AppendAllText(myPath, $"\n====preTSTSTS====\n");
             var initializeRequest = JsonSerializer.Deserialize<InitializeRequest>(content);
+            //try
+            //{
+            //    initializeRequest = JsonSerializer.Deserialize<InitializeRequest>(content);
+            //}
+            //catch (Exception e)
+            //{
+            //    File.AppendAllText(myPath, $"\n====eTSTSTS {e.ToString()}====\n");
+            //    throw;
+            //}
+            //File.AppendAllText(myPath, $"\n====postTSTSTS====\n");
+
             File.AppendAllText(myPath, $"\n====Id:{initializeRequest?.Id ?? -123}====\n");
             if (!string.IsNullOrWhiteSpace(initializeRequest?.@params?.rootUri))
             {
@@ -298,11 +310,24 @@ object? DeserializeContent(string content)
             else
             {
                 File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.RootUri:null====\n");
+                if (initializeRequest?.@params?.workspaceFolders is null)
+                {
+                    File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.workspaceFolders:null====\n");
+                }
+                else
+                {
+                    File.AppendAllText(myPath, $"\n====initializeRequest?.Params?.workspaceFolders:null====\n");
+                    foreach (var workspaceFolder in initializeRequest?.@params?.workspaceFolders)
+                    {
+                        File.AppendAllText(myPath, $"\n====workspaceFolder: name->{workspaceFolder.name} | uri->{workspaceFolder.uri}====\n");
+                    }
+                }
             }
             var initializeResponse = new InitializeResponse(new InitializeResponseResult());
             Console.Out.WriteLine(MAIN_encodeMessageObject(initializeResponse));
             return initializeRequest;
         case "textDocument/didOpen":
+            File.AppendAllText(myPath, $"\n====teeesttextDocument/didOpen====\n");
             var didOpenTextDocumentNotification = JsonSerializer.Deserialize<DidOpenTextDocumentNotification>(content);
             var p = didOpenTextDocumentNotification?.@params is null ? "null" : "nn";
             File.AppendAllText(myPath, $"\n====dotdn...params:{p}====\n");
@@ -341,9 +366,12 @@ object? DeserializeContent(string content)
         case "textDocument/documentSymbol":
             var symbolRequest = JsonSerializer.Deserialize<TextDocumentDocumentSymbolRequest>(content);
             File.AppendAllText(myPath, $"\n====RECEIVED DOCUMENT SYMBOL {symbolRequest.@params.textDocument.uri}====\n");
+            File.AppendAllText(myPath, $"\n====TEEEEEEEEEEEST====\n");
 
             if (_javaScriptWorkspace?.OpenedSourceFileAbsolutePathToInMemoryContentMap.TryGetValue(symbolRequest.@params.textDocument.uri, out var javaScriptDocument) ?? false)
             {
+                File.AppendAllText(myPath, $"\n====v2TEEEEEEEEEEEST====\n");
+
                 var javascriptParser = new JavaScriptParser(javaScriptDocument);
                 javaScriptDocument.CompilationUnit = javascriptParser.Parse();
                 //if (!javaScriptDocument.HasBeenParsedAtLeastOnce)
